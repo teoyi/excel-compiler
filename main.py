@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-FILE_PATH = 'C:\\Users\\yipen\\Desktop\\SOT - JAN 2022.xlsx'
+FILE_PATH = 'C:\\Users\\yipen\\Desktop\\SOT - FEB 1 - 28  2022.xlsx'
 xl = pd.ExcelFile(FILE_PATH)
 # print(xl.sheet_names)
 
@@ -17,7 +17,8 @@ for sheet_names in xl.sheet_names:
 data = []
 # assuming all sheets have the same headers
 # 01 JAN 2022', '02 Jan 2022'
-
+for required_sheet in required_sheets:
+    print(required_sheet)
 for required_sheet in required_sheets:
     sheet = pd.read_excel(xl, sheet_name=required_sheet)
     sheet['Original Sheet'] = required_sheet
@@ -26,5 +27,11 @@ for required_sheet in required_sheets:
 # for datas in data:
 #     print(datas)
 compiled_data = pd.concat(data, axis=0, ignore_index=True)
+compiled_data.drop(
+    compiled_data.index[compiled_data['ServicePriceExclGST'] == 'ServicePriceExclGST'], inplace=True)
+compiled_data.drop(
+    compiled_data.index[compiled_data['DocumentNo'] == 'DocumentNo'], inplace=True)
+compiled_data.drop(
+    compiled_data.index[compiled_data['ServiceOrderNo'] == 'ServiceOrderNo'], inplace=True)
 compiled_data.to_excel(
-    r'C:\\Users\\yipen\\Desktop\\compiled_SOT.xlsx', index=False)
+    r'C:\\Users\\yipen\\Desktop\\compiled_FEB_SOT_v2.xlsx', index=False)
