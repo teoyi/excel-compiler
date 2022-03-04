@@ -46,10 +46,13 @@ df2_docuNo = df2['Document No.'].tolist()
 # print(df2_docuNo)
 
 for documentNo in df2_docuNo:
+
     datas.append(df2.loc[df2['Document No.'] == documentNo])
-    datas.append(df1.loc[df1['Document No.'] == documentNo])
-    datas.append(df3.loc[df3['Document No.'] == documentNo])
-    # print(df1.loc[df1['Document No.'] == documentNo])
+    if (df1['Document No.'].eq(documentNo).any()):
+        datas.append(df1.loc[df1['Document No.'] == documentNo])
+    if (df3['Document No.'].eq(documentNo).any()):
+        datas.append(df3.loc[df3['Document No.'] == documentNo])
+# print(df1.loc[df1['Document No.'] == documentNo])
 
 # for data in datas:
 #     print(data)
@@ -71,7 +74,7 @@ def highlight(value):
 
 
 compiled_data.style.applymap(highlight, subset=['Origin']).to_excel(
-    r'C:\\Users\\yipen\\Desktop\\filtered.xlsx', index=False)
+    r'C:\\Users\\yipen\\Desktop\\filtered_v4.xlsx', index=False)
 
 
 # (

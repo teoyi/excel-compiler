@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-FILE_PATH = 'C:\\Users\\yipen\\Desktop\\IKEA MGL Billing - Dec 2021 (1) SUQI.xlsx'
+FILE_PATH = 'C:\\Users\\yipen\\Desktop\\SOT - DEC 2021.xlsx.xlsx'
 xl = pd.ExcelFile(FILE_PATH)
 # print(xl.sheet_names)
 
@@ -9,7 +9,7 @@ required_sheets = []
 for sheet_names in xl.sheet_names:
     # print(sheet_names.split(' '))
     # if sheet_names.split(' ')[0].isnumeric() and len(sheet_names.split(' ')) == 3:
-    if sheet_names.split(' ')[0].isnumeric():
+    if (sheet_names.split(' ')[0].isnumeric() and sheet_names.split(' ')[2].isnumeric()):
         # print(sheet_names)
         required_sheets.append(sheet_names)
 
@@ -28,11 +28,17 @@ for required_sheet in required_sheets:
 # for datas in data:
 #     print(datas)
 compiled_data = pd.concat(data, axis=0, ignore_index=True)
-# compiled_data.drop(
-#     compiled_data.index[compiled_data['ServicePriceExclGST'] == 'ServicePriceExclGST'], inplace=True)
+# print(compiled_data.dtypes)
+compiled_data['Service Remarks'] = compiled_data['ServiceComment'].astype(str) + ';' + \
+    compiled_data['Remark/ Issue (Reschedule/Cancel Date (CCC/CR: date & time inform MGL)'].astype(str)
+# print(compiled_data.columns)
+compiled_data.drop(
+    compiled_data.index[compiled_data['DocumentNo'] == 'DocumentNo'], inplace=True)
+compiled_data.drop(
+    compiled_data.index[compiled_data['CurrentTeam'] == 'CurrentTeam'], inplace=True)
 # compiled_data.drop(
 #     compiled_data.index[compiled_data['DocumentNo'] == 'DocumentNo'], inplace=True)
 # compiled_data.drop(
 #     compiled_data.index[compiled_data['ServiceOrderNo'] == 'ServiceOrderNo'], inplace=True)
 compiled_data.to_excel(
-    r'C:\\Users\\yipen\\Desktop\\compiled_IKEA_MGL_BILLING.xlsx', index=False)
+    r'C:\\Users\\yipen\\Desktop\\compiled_DEC_SOT_2021.xlsx', index=False)
