@@ -1,15 +1,15 @@
 import pandas as pd
 
-FILE_PATH1 = 'C:\\Users\\yipen\\Desktop\\Dec 21.xls.xls'
-FILE_PATH2 = "C:\\Users\\yipen\\Desktop\\Request_IKEA_copy.xlsx"
-FILE_PATH3 = 'C:\\Users\\yipen\\Desktop\\compiled_IKEA_MGL_BILLING.xlsx'
-FILE_PATH4 = "C:\\Users\\yipen\\Desktop\\compiled_DEC.xlsx"
-FILE_PATH5 = "C:\\Users\\yipen\\Desktop\\compiled_DEC_SOT_2021.xlsx"
+FILE_PATH1 = 'C:\\Users\\yipen\\Desktop\\compiled_MAR_SOT_2022.xlsx'
+FILE_PATH2 = "C:\\Users\\yipen\\Desktop\\NVB_MAR_2022_FILTERED.xlsx"
+FILE_PATH3 = 'C:\\Users\\yipen\\Desktop\\1-3 EPOD Mar.xls.xls'
+# FILE_PATH4 = "C:\\Users\\yipen\\Desktop\\compiled_DEC.xlsx"
+# FILE_PATH5 = "C:\\Users\\yipen\\Desktop\\compiled_DEC_SOT_2021.xlsx"
 df1 = pd.read_excel(FILE_PATH1)
 df2 = pd.read_excel(FILE_PATH2)
 df3 = pd.read_excel(FILE_PATH3)
-df4 = pd.read_excel(FILE_PATH4)
-df5 = pd.read_excel(FILE_PATH5)
+# df4 = pd.read_excel(FILE_PATH4)
+# df5 = pd.read_excel(FILE_PATH5)
 
 # df3 = pd.read_excel(FILE_PATH3)
 # print(xl.sheet_names)
@@ -39,11 +39,11 @@ for each df2 document no
 datas = []
 
 # set origin for tracing
-df1['Origin'] = 'EPOD'
-df2['Origin'] = 'IKEA-CN'
-df3['Origin'] = 'SUQI'
-df4['Origin'] = 'NVB'
-df5['Origin'] = 'SOT-DEC2021'
+df1['Origin'] = 'SOT'
+df2['Origin'] = 'NVB'
+df3['Origin'] = 'EPOD'
+# df4['Origin'] = 'NVB'
+# df5['Origin'] = 'SOT-DEC2021'
 # print(df2.info())
 
 # prepare document no for loop
@@ -60,18 +60,20 @@ for documentNo in uniqueDocuNo:
         datas.append(df1.loc[df1['Document No.'] == documentNo])
     if (df3['Document No.'].eq(documentNo).any()):
         datas.append(df3.loc[df3['Document No.'] == documentNo])
-    if (df4['Document No.'].eq(documentNo).any()):
-        datas.append(df4.loc[df4['Document No.'] == documentNo])
-    if (df5['Document No.'].eq(documentNo).any()):
-        datas.append(df5.loc[df5['Document No.'] == documentNo])
+    # if (df4['Document No.'].eq(documentNo).any()):
+    #     datas.append(df4.loc[df4['Document No.'] == documentNo])
+    # if (df5['Document No.'].eq(documentNo).any()):
+    #     datas.append(df5.loc[df5['Document No.'] == documentNo])
 
 
 compiled_data = pd.concat(datas, axis=0, ignore_index=True)
 print(compiled_data.info())
 
 filtered = []
+# headers = ['Origin', 'Document No.', 'Service Order No.', 'Service Name', 'Service Status',
+#    'Service Remarks', 'Customer Remarks', 'Reason', 'Bill to Ikea', 'Status', 'Status_2', 'Flow', 'Sales Channel']
 headers = ['Origin', 'Document No.', 'Service Order No.', 'Service Name', 'Service Status',
-           'Service Remarks', 'Customer Remarks', 'Reason', 'Bill to Ikea', 'Status', 'Status_2', 'Flow', 'Sales Channel']
+           'Service Remarks', 'Customer Remarks', 'Reason', 'Status', 'Sales Channel']
 
 filtered_data = compiled_data.loc[:, headers]
 df_droplog = pd.DataFrame()
@@ -92,7 +94,7 @@ print(df_droplog)
 
 
 def highlight(value):
-    if value == 'SUQI':
+    if value == 'SOT':
         return 'background-color: #91BAD6'
     elif value == 'IKEA-CN':
         return 'background-color: red'
@@ -105,7 +107,7 @@ def highlight(value):
 
 
 filtered_data.style.applymap(highlight, subset=['Origin']).to_excel(
-    r'C:\\Users\\yipen\\Desktop\\filtered_ALL_FINAL.xlsx', index=False)
+    r'C:\\Users\\yipen\\Desktop\\filtered_ALL_MAR2022.xlsx', index=False)
 
 # filtered_data.to_excel(
 #     r'C:\\Users\\yipen\\Desktop\\filtered_EPOD.xlsx', index=False)
