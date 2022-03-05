@@ -1,8 +1,8 @@
 import pandas as pd
 
-FILE_PATH1 = 'C:\\Users\\yipen\\Desktop\\compiled_MAR_SOT_2022.xlsx'
-FILE_PATH2 = "C:\\Users\\yipen\\Desktop\\NVB_MAR_2022_FILTERED.xlsx"
-FILE_PATH3 = 'C:\\Users\\yipen\\Desktop\\1-3 EPOD Mar.xls.xls'
+FILE_PATH1 = 'C:\\Users\\yipen\\Desktop\\compiled_JAN_SOT_2022.xlsx'
+FILE_PATH2 = "C:\\Users\\yipen\\Desktop\\NVB_JAN_2022_FILTERED.xlsx"
+FILE_PATH3 = 'C:\\Users\\yipen\\Desktop\\Jan 2022.xlsx'
 # FILE_PATH4 = "C:\\Users\\yipen\\Desktop\\compiled_DEC.xlsx"
 # FILE_PATH5 = "C:\\Users\\yipen\\Desktop\\compiled_DEC_SOT_2021.xlsx"
 df1 = pd.read_excel(FILE_PATH1)
@@ -72,7 +72,7 @@ print(compiled_data.info())
 filtered = []
 # headers = ['Origin', 'Document No.', 'Service Order No.', 'Service Name', 'Service Status',
 #    'Service Remarks', 'Customer Remarks', 'Reason', 'Bill to Ikea', 'Status', 'Status_2', 'Flow', 'Sales Channel']
-headers = ['Origin', 'Document No.', 'Service Order No.', 'Service Name', 'Service Status',
+headers = ['Origin', 'Document No.', 'Service Order No.', 'Service Name', 'Service Date', 'Service Status',
            'Service Remarks', 'Customer Remarks', 'Reason', 'Status', 'Sales Channel']
 
 filtered_data = compiled_data.loc[:, headers]
@@ -107,7 +107,7 @@ def highlight(value):
 
 
 filtered_data.style.applymap(highlight, subset=['Origin']).to_excel(
-    r'C:\\Users\\yipen\\Desktop\\filtered_ALL_MAR2022.xlsx', index=False)
+    r'C:\\Users\\yipen\\Desktop\\filtered_ALL_JAN2022.xlsx', index=False)
 
 # filtered_data.to_excel(
 #     r'C:\\Users\\yipen\\Desktop\\filtered_EPOD.xlsx', index=False)
