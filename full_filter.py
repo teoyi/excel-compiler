@@ -1,13 +1,13 @@
 import pandas as pd
 
-FILE_PATH1 = 'C:\\Users\\yipen\\Desktop\\compiled_JAN_SOT_2022.xlsx'
-FILE_PATH2 = "C:\\Users\\yipen\\Desktop\\NVB_JAN_2022_FILTERED.xlsx"
-FILE_PATH3 = 'C:\\Users\\yipen\\Desktop\\Jan 2022.xlsx'
+FILE_PATH1 = 'C:\\Users\\yipen\\Desktop\\NVB_DEC_UPDATED_FILTERED_09032022.xlsx'
+FILE_PATH2 = "C:\\Users\\yipen\\Desktop\\REVISED_DEC21_S_ORDER.xlsx"
+# FILE_PATH3 = 'C:\\Users\\yipen\\Desktop\\Jan 2022.xlsx'
 # FILE_PATH4 = "C:\\Users\\yipen\\Desktop\\compiled_DEC.xlsx"
 # FILE_PATH5 = "C:\\Users\\yipen\\Desktop\\compiled_DEC_SOT_2021.xlsx"
 df1 = pd.read_excel(FILE_PATH1)
 df2 = pd.read_excel(FILE_PATH2)
-df3 = pd.read_excel(FILE_PATH3)
+# df3 = pd.read_excel(FILE_PATH3)
 # df4 = pd.read_excel(FILE_PATH4)
 # df5 = pd.read_excel(FILE_PATH5)
 
@@ -39,9 +39,13 @@ for each df2 document no
 datas = []
 
 # set origin for tracing
-df1['Origin'] = 'SOT'
-df2['Origin'] = 'NVB'
-df3['Origin'] = 'EPOD'
+# df.insert(loc=idx, column='A', value=new_col)
+df1.insert(loc=0, column='Origin', value='NVB')
+df2.insert(loc=0, column='Origin', value='REVISED-DATA')
+
+# df1['Origin'] = 'NVB'
+# df2['Origin'] = 'IKEA-CN'
+# df3['Origin'] = 'EPOD'
 # df4['Origin'] = 'NVB'
 # df5['Origin'] = 'SOT-DEC2021'
 # print(df2.info())
@@ -58,8 +62,8 @@ for documentNo in uniqueDocuNo:
     datas.append(df2.loc[df2['Document No.'] == documentNo])
     if (df1['Document No.'].eq(documentNo).any()):
         datas.append(df1.loc[df1['Document No.'] == documentNo])
-    if (df3['Document No.'].eq(documentNo).any()):
-        datas.append(df3.loc[df3['Document No.'] == documentNo])
+    # if (df3['Document No.'].eq(documentNo).any()):
+    #     datas.append(df3.loc[df3['Document No.'] == documentNo])
     # if (df4['Document No.'].eq(documentNo).any()):
     #     datas.append(df4.loc[df4['Document No.'] == documentNo])
     # if (df5['Document No.'].eq(documentNo).any()):
@@ -72,15 +76,17 @@ print(compiled_data.info())
 filtered = []
 # headers = ['Origin', 'Document No.', 'Service Order No.', 'Service Name', 'Service Status',
 #    'Service Remarks', 'Customer Remarks', 'Reason', 'Bill to Ikea', 'Status', 'Status_2', 'Flow', 'Sales Channel']
-headers = ['Origin', 'Document No.', 'Service Order No.', 'Service Name', 'Service Date', 'Service Status',
-           'Service Remarks', 'Customer Remarks', 'Reason', 'Status', 'Sales Channel']
+# headers = ['Origin', 'Document No.', 'Service Order No.', 'Service Name', 'Service Date', 'Service Status',
+#            'Service Remarks', 'Customer Remarks', 'Reason', 'Status', 'Sales Channel']
+headers = ['Origin', 'Document No.', 'Service Order No.',
+           'Service Name', 'Service Status']
 
-filtered_data = compiled_data.loc[:, headers]
-df_droplog = pd.DataFrame()
-filtered_dups = filtered_data.duplicated(subset=headers, keep='first')
-filtered_keep = filtered_data.loc[~filtered_dups]
-df_droplog = df_droplog.append(filtered_data.loc[filtered_dups])
-print(df_droplog)
+# filtered_data = compiled_data.loc[:, headers]
+# df_droplog = pd.DataFrame()
+# filtered_dups = filtered_data.duplicated(subset=headers, keep='first')
+# filtered_keep = filtered_data.loc[~filtered_dups]
+# df_droplog = df_droplog.append(filtered_data.loc[filtered_dups])
+# print(df_droplog)
 # final_data = filtered_data.drop_duplicates(subset=headers)
 # filtered_data = compiled_data.drop_duplicates(
 #     subset=compiled_data.columns.values.tolist())
@@ -92,6 +98,13 @@ print(df_droplog)
 # print(filtered_data.info())
 # print(filtered_data.info())
 
+# removedValues = ['Bathroom Installation', 'Bathroom Accessories Installation',
+#                  'Call Out Kitchen/Bathroom', 'Picking Service']
+
+# for value in removedValues:
+#     compiled_data.drop(
+#         compiled_data.index[compiled_data['Service Name'] == value], inplace=True)
+
 
 def highlight(value):
     if value == 'SOT':
@@ -102,12 +115,12 @@ def highlight(value):
         return 'background-color: #CBC3E3'
     elif value == 'EPOD':
         return 'background-color: green'
-    elif value == 'SOT-DEC2021':
+    elif value == 'REVISED-DATA':
         return 'background-color: #FFD580'
 
 
-filtered_data.style.applymap(highlight, subset=['Origin']).to_excel(
-    r'C:\\Users\\yipen\\Desktop\\filtered_ALL_JAN2022.xlsx', index=False)
+compiled_data.style.applymap(highlight, subset=['Origin']).to_excel(
+    r'C:\\Users\\yipen\\Desktop\\S_ORDER_REVISED_DEC_21_09032022.xlsx', index=False)
 
 # filtered_data.to_excel(
 #     r'C:\\Users\\yipen\\Desktop\\filtered_EPOD.xlsx', index=False)
