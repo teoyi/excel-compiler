@@ -1,8 +1,8 @@
 from enum import unique
 import pandas as pd
 
-FILE_PATH1 = 'C:\\Users\\yipen\\Desktop\\NVB_DEC_UPDATED_FILTERED_09032022.xlsx'
-FILE_PATH2 = "C:\\Users\\yipen\\Desktop\\IKEA-CN-SHEETS.xlsx"
+FILE_PATH1 = 'C:\\Users\\yipen\\Desktop\\NVB_DEC21.xlsx'
+FILE_PATH2 = "C:\\Users\\yipen\\Desktop\\IKEA-CN-DEC21.xlsx"
 # FILE_PATH3 = 'C:\\Users\\yipen\\Desktop\\Jan 2022.xlsx'
 # FILE_PATH4 = "C:\\Users\\yipen\\Desktop\\compiled_DEC.xlsx"
 # FILE_PATH5 = "C:\\Users\\yipen\\Desktop\\compiled_DEC_SOT_2021.xlsx"
@@ -78,7 +78,7 @@ for required_sheet in required_sheets:
             return 'background-color: #FFD580'
 
     filtered_keep.style.applymap(highlight, subset=['Origin']).to_excel(
-        r'C:\\Users\\yipen\\Desktop\\%s_compiled_REVISED_DEC_21_DATA.xlsx' % required_sheet, index=False)
+        r'C:\\Users\\yipen\\Desktop\\%s_DEC21.xlsx' % required_sheet, index=False)
 
     # data.append(sheet)
 
