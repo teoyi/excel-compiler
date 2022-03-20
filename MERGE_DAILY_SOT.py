@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-FILE_PATH = "C:\\Users\\yipen\\Desktop\\SOT - MAR 2022 1-14.xlsx"
+FILE_PATH = "C:\\Users\\yipen\\Desktop\\SOT - JAN 2022 (12-03-22 FROM SHARON).xlsx"
 xl = pd.ExcelFile(FILE_PATH)
 
 required_sheets = []
@@ -39,5 +39,5 @@ filtered_data = compiled_data.loc[:, headers]
 # compiled_data.drop(
 #     compiled_data.index[compiled_data['ServiceOrderNo'] == 'ServiceOrderNo'], inplace=True)
 compiled_data.to_excel(
-    r"C:\\Users\\yipen\\Desktop\\compiled_MAR_SOT_2022.xlsx", index=False
+    r"C:\\Users\\yipen\\Desktop\\compiled_JAN_SOT_2022.xlsx", index=False
 )
