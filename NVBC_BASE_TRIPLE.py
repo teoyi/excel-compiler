@@ -421,13 +421,19 @@ sgv_svc = [
 def bill_to_ikea(df):
     for i in df.index:
         row = df.iloc[i]
-        # print(row)
         svcName = row["Service Name"]
         sgv = row["Service Goods Value"]
-        if svcName in const_svc:
-            df.at[i, "Bill to Ikea"] = 35
-        elif svcName in sgv_svc:
-            df.at[i, "Bill to Ikea"] = round(0.095 * sgv, 2)
+        mvbc_val = row["MVBC"]
+        sot_val = row["SOT"]
+        epod_val = row["EPOD"]
+
+        if (mvbc_val == "1") and (sot_val == "0") and (epod_val == "0"):
+            df.at[i, "Bill to Ikea"] = 0
+        else:
+            if svcName in const_svc:
+                df.at[i, "Bill to Ikea"] = 35
+            elif svcName in sgv_svc:
+                df.at[i, "Bill to Ikea"] = round(0.095 * sgv, 2)
 
 
 print("---BILL TO IKEA START")
@@ -466,98 +472,110 @@ def pay_to_sub(df, df_outlier):
     for i in df.index:
         row = df.iloc[i]
         team = row["SOT Team"]
+        mvbc_val = row["MVBC"]
+        sot_val = row["SOT"]
+        epod_val = row["EPOD"]
+        if (mvbc_val == "1") and (sot_val == "0") and (epod_val == "0"):
+            df.at[i, "Payout to Subco"] = 0
+        else:
+            if not pd.isnull(team):
+                strLength = len(team)
+                if strLength > 5:
+                    df_outlier.append(row.values.tolist())
+                else:
+                    one = team[0]
+                    two = team[:2]
+                    three = team[:3]
 
-        if not pd.isnull(team):
-            strLength = len(team)
-            if strLength > 5:
-                df_outlier.append(row.values.tolist())
-            else:
-                one = team[0]
-                two = team[:2]
-                three = team[:3]
+                    # if three == "MGL":
+                    #     print(team[3:])
 
-                # if three == "MGL":
-                #     print(team[3:])
+                    # # print(three, two, one)
+                    if two != "GS":
+                        svcName = row["Service Name"]
+                        sgv = row["Service Goods Value"]
 
-                # # print(three, two, one)
-                if two != "GS":
-                    svcName = row["Service Name"]
-                    sgv = row["Service Goods Value"]
+                        if three == "MGL":
+                            teamNum = team[3:]
+                            thirty = ["11", "12", "13", "14"]
+                            thirty_three = ["10", "15", "16", "17"]
 
-                    if three == "MGL":
-                        teamNum = team[3:]
-                        thirty = [11, 12, 13, 14]
-                        thirty_three = [10, 15, 16, 17]
-                        if teamNum in thirty:
-                            if svcName in const_svc:
-                                df.at[i, "Payout to Subco"] = 30
-                            elif svcName in sgv_svc:
-                                df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                        elif teamNum in thirty_three:
+                            if teamNum in thirty:
+                                if team == "MGL10":
+                                    print("mgl10")
+                                if svcName in const_svc:
+                                    df.at[i, "Payout to Subco"] = 30
+                                elif svcName in sgv_svc:
+                                    df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
+                            elif teamNum in thirty_three:
+                                if team == "MGL10":
+                                    print("mgl10s")
+                                if svcName in const_svc:
+                                    df.at[i, "Payout to Subco"] = 33
+                                elif svcName in sgv_svc:
+                                    df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
+                            else:
+                                df.at[i, "Payout to Subco"] = 0
+                        elif three == "HJK":
                             if svcName in const_svc:
                                 df.at[i, "Payout to Subco"] = 33
                             elif svcName in sgv_svc:
                                 df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                    elif three == "HJK":
-                        if svcName in const_svc:
-                            df.at[i, "Payout to Subco"] = 33
-                        elif svcName in sgv_svc:
-                            df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                    elif two == "JX":
-                        if svcName in const_svc:
-                            df.at[i, "Payout to Subco"] = 33
-                        elif svcName in sgv_svc:
-                            df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                    elif two == "SL":
-                        if svcName in const_svc:
-                            df.at[i, "Payout to Subco"] = 33
-                        elif svcName in sgv_svc:
-                            df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                    elif three == "TLI":
-                        if svcName in const_svc:
-                            df.at[i, "Payout to Subco"] = 33
-                        elif svcName in sgv_svc:
-                            df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                    elif one == "T":
-                        if svcName in const_svc:
-                            df.at[i, "Payout to Subco"] = 33
-                        elif svcName in sgv_svc:
-                            df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                    elif three == "SGP":
-                        if svcName in const_svc:
-                            df.at[i, "Payout to Subco"] = 33
-                        elif svcName in sgv_svc:
-                            df.at[i, "Payout to Subco"] = round(0.07 * sgv, 2)
-                    elif two == "BF":
-                        if svcName in const_svc:
-                            df.at[i, "Payout to Subco"] = 33
-                        elif svcName in sgv_svc:
-                            df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                    elif two == "KR":
-                        if svcName in const_svc:
-                            df.at[i, "Payout to Subco"] = 33
-                        elif svcName in sgv_svc:
-                            df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                    elif two == "N1":
-                        if svcName in const_svc:
-                            df.at[i, "Payout to Subco"] = 33
-                        elif svcName in sgv_svc:
-                            df.at[i, "Payout to Subco"] = round(0.07 * sgv, 2)
-                    elif two == "IK":
-                        if svcName in const_svc:
-                            df.at[i, "Payout to Subco"] = 33
-                        elif svcName in sgv_svc:
-                            df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                else:
-                    svcName = row["Service Name"]
-                    sgv = row["Service Goods Value"]
+                        elif two == "JX":
+                            if svcName in const_svc:
+                                df.at[i, "Payout to Subco"] = 33
+                            elif svcName in sgv_svc:
+                                df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
+                        elif two == "SL":
+                            if svcName in const_svc:
+                                df.at[i, "Payout to Subco"] = 33
+                            elif svcName in sgv_svc:
+                                df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
+                        elif three == "TLI":
+                            if svcName in const_svc:
+                                df.at[i, "Payout to Subco"] = 33
+                            elif svcName in sgv_svc:
+                                df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
+                        elif one == "T":
+                            if svcName in const_svc:
+                                df.at[i, "Payout to Subco"] = 33
+                            elif svcName in sgv_svc:
+                                df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
+                        elif three == "SGP":
+                            if svcName in const_svc:
+                                df.at[i, "Payout to Subco"] = 33
+                            elif svcName in sgv_svc:
+                                df.at[i, "Payout to Subco"] = round(0.07 * sgv, 2)
+                        elif two == "BF":
+                            if svcName in const_svc:
+                                df.at[i, "Payout to Subco"] = 33
+                            elif svcName in sgv_svc:
+                                df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
+                        elif two == "KR":
+                            if svcName in const_svc:
+                                df.at[i, "Payout to Subco"] = 33
+                            elif svcName in sgv_svc:
+                                df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
+                        elif two == "N1":
+                            if svcName in const_svc:
+                                df.at[i, "Payout to Subco"] = 33
+                            elif svcName in sgv_svc:
+                                df.at[i, "Payout to Subco"] = round(0.07 * sgv, 2)
+                        elif two == "IK":
+                            if svcName in const_svc:
+                                df.at[i, "Payout to Subco"] = 33
+                            elif svcName in sgv_svc:
+                                df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
+                    else:
+                        svcName = row["Service Name"]
+                        sgv = row["Service Goods Value"]
 
-                    if svcName in gs_const_svc:
-                        df.at[i, "Payout to Subco"] = 33
-                    elif svcName in gs_sgv_svc:
-                        df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                    elif svcName in gs_afterSales:
-                        df.at[i, "Payout to Subco"] = round(0.07 * sgv, 2)
+                        if svcName in gs_const_svc:
+                            df.at[i, "Payout to Subco"] = 33
+                        elif svcName in gs_sgv_svc:
+                            df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
+                        elif svcName in gs_afterSales:
+                            df.at[i, "Payout to Subco"] = round(0.07 * sgv, 2)
 
 
 print("---PAYOUT TO SUBCO START")
