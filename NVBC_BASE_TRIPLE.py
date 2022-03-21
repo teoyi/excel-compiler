@@ -48,8 +48,6 @@ required_headers = [
     "Service Date",  # NVBC, SOT
     "GRN",
     "Service Goods Value",  # NVBC, SOT
-    "Service Goods Value1",  # SOT
-    "Service Goods Value2",  # SOT
     "Manual Value",
     "Service Price Excl. GST",  # NVBC, SOT
     "Capacity Value Weight",
@@ -75,7 +73,8 @@ FILE_PATH_SOT = "C:\\Users\\yipen\\Desktop\\compiled_FEB_SOT_2022.xlsx"
 FILE_PATH_NVBC = "C:\\Users\\yipen\\Desktop\\MVBC_FEB.xlsx"
 
 df_epod = pd.read_excel(FILE_PATH_EPOD)
-df_sot = pd.read_excel(FILE_PATH_SOT)
+df_sot = pd.read_excel(FILE_PATH_SOT, sheet_name="filtered")
+df_sot_dropped = pd.read_excel(FILE_PATH_SOT, sheet_name="dropped")
 df_nvbc = pd.read_excel(FILE_PATH_NVBC, sheet_name="Filtered")
 
 # CREATE WRITER TO OUTPUT MULTIPLE SHEETS

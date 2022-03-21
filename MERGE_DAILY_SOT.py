@@ -19,25 +19,38 @@ for required_sheet in required_sheets:
     data.append(sheet)
 
 compiled_data = pd.concat(data, axis=0, ignore_index=True)
+
+# handle dropping titles for subsequent headers
 compiled_data.drop(
     compiled_data.index[compiled_data["DocumentNo"] == "DocumentNo"], inplace=True
 )
 compiled_data.drop(compiled_data.index[compiled_data["Team"] == "Team"], inplace=True)
-compiled_data.dropna(subset=["Team"], inplace=True)
-headers = [
-    "Team",
-    "DocumentNo",
-    "ServiceOrderNo",
-    "ServiceName",
-    "Remark/ Issue (Reschedule/Cancel Date (CCC/CR: date & time inform MGL)",
-    "Status",
-    "Date",
-]
-filtered_data = compiled_data.loc[:, headers]
+
+# handle dropping na for document no and service order no
+na_free = compiled_data.dropna(subset=["DocumentNo", "ServiceOrderNo"])
+only_na = compiled_data[~compiled_data.index.isin(na_free.index)]
+
+# compiled_data.dropna(subset=["Team"], inplace=True)
+# headers = [
+#     "Team",
+#     "DocumentNo",
+#     "ServiceOrderNo",
+#     "ServiceName",
+#     "Remark/ Issue (Reschedule/Cancel Date (CCC/CR: date & time inform MGL)",
+#     "Status",
+#     "Date",
+# ]
+# filtered_data = compiled_data.loc[:, headers]
 # compiled_data.drop(
 #     compiled_data.index[compiled_data['Document No.'] == 'Document No.'], inplace=True)
 # compiled_data.drop(
 #     compiled_data.index[compiled_data['ServiceOrderNo'] == 'ServiceOrderNo'], inplace=True)
-compiled_data.to_excel(
-    r"C:\\Users\\yipen\\Desktop\\compiled_FEB_SOT_2022.xlsx", index=False
+# compiled_data.to_excel(
+#     r"C:\\Users\\yipen\\Desktop\\compiled_JAN_SOT_2022.xlsx", index=False
+# )
+merge_sot_writer = pd.ExcelWriter(
+    "C:\\Users\\yipen\\Desktop\\compiled_FEB_SOT_2022.xlsx", engine="xlsxwriter"
 )
+na_free.to_excel(merge_sot_writer, sheet_name="filtered", index=False)
+only_na.to_excel(merge_sot_writer, sheet_name="dropped", index=False)
+merge_sot_writer.save()
