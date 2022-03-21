@@ -52,6 +52,10 @@ required_headers = [
     "Service Goods Value2",  # SOT
     "Manual Value",
     "Service Price Excl. GST",  # NVBC, SOT
+    "Capacity Value Weight",
+    "Capacity Value Volume",
+    "Subco Overweight Status",
+    "Ikea Overweight Status",
     "Payout to Subco",
     "Bill to Ikea",
     "CRM Case ID.",  # NVBC
@@ -66,9 +70,9 @@ required_headers = [
 ]
 
 # READ EXCEL FILES AND CREATE DATAFRAME
-FILE_PATH_EPOD = "C:\\Users\\yipen\\Desktop\\JAN-EPOD-COPY.xls"
-FILE_PATH_SOT = "C:\\Users\\yipen\\Desktop\\compiled_JAN_SOT_2022.xlsx"
-FILE_PATH_NVBC = "C:\\Users\\yipen\\Desktop\\MVBC_JAN.xlsx"
+FILE_PATH_EPOD = "C:\\Users\\yipen\\Desktop\\EPOD_FEB_COPY.xls"
+FILE_PATH_SOT = "C:\\Users\\yipen\\Desktop\\compiled_FEB_SOT_2022.xlsx"
+FILE_PATH_NVBC = "C:\\Users\\yipen\\Desktop\\MVBC_FEB.xlsx"
 
 df_epod = pd.read_excel(FILE_PATH_EPOD)
 df_sot = pd.read_excel(FILE_PATH_SOT)
@@ -258,6 +262,10 @@ def data_fill(df):
                     df.at[i, col] = sot_match.iloc[0][col]
                 elif col == "Sales Channel":
                     df.at[i, col] = nvbc_match.iloc[0][col]
+                elif col == "Capacity Value Weight":
+                    df.at[i, col] = nvbc_match.iloc[0][col]
+                elif col == "Capacity Value Volume":
+                    df.at[i, col] = nvbc_match.iloc[0][col]
                 else:
                     pass
         elif (
@@ -300,6 +308,10 @@ def data_fill(df):
                     df.at[i, col] = sot_match.iloc[0][col]
                 elif col == "Sales Channel":
                     df.at[i, col] = nvbc_match.iloc[0][col]
+                elif col == "Capacity Value Weight":
+                    df.at[i, col] = nvbc_match.iloc[0][col]
+                elif col == "Capacity Value Volume":
+                    df.at[i, col] = nvbc_match.iloc[0][col]
                 else:
                     pass
         elif (
@@ -338,6 +350,10 @@ def data_fill(df):
                     df.at[i, col] = str(nvbc_match.iloc[0][col])
                 elif col == "Sales Channel":
                     df.at[i, col] = nvbc_match.iloc[0][col]
+                elif col == "Capacity Value Weight":
+                    df.at[i, col] = nvbc_match.iloc[0][col]
+                elif col == "Capacity Value Volume":
+                    df.at[i, col] = nvbc_match.iloc[0][col]
                 else:
                     pass
         elif not nvbc_match.empty and sot_match.empty and epod_match.empty:  # only nvbc
@@ -365,6 +381,10 @@ def data_fill(df):
                 elif col == "Alt Doc Number (up to 3)":
                     df.at[i, col] = str(nvbc_match.iloc[0][col])
                 elif col == "Sales Channel":
+                    df.at[i, col] = nvbc_match.iloc[0][col]
+                elif col == "Capacity Value Weight":
+                    df.at[i, col] = nvbc_match.iloc[0][col]
+                elif col == "Capacity Value Volume":
                     df.at[i, col] = nvbc_match.iloc[0][col]
                 else:
                     pass
@@ -501,15 +521,11 @@ def pay_to_sub(df, df_outlier):
                             thirty_three = ["10", "15", "16", "17"]
 
                             if teamNum in thirty:
-                                if team == "MGL10":
-                                    print("mgl10")
                                 if svcName in const_svc:
                                     df.at[i, "Payout to Subco"] = 30
                                 elif svcName in sgv_svc:
                                     df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
                             elif teamNum in thirty_three:
-                                if team == "MGL10":
-                                    print("mgl10s")
                                 if svcName in const_svc:
                                     df.at[i, "Payout to Subco"] = 33
                                 elif svcName in sgv_svc:
@@ -588,7 +604,104 @@ outlier_s = pd.DataFrame(df_s_outlier, columns=required_headers)
 print("PART 2 COMPLETE")
 print("_______________________")
 
+"""
+PART 3: OVERWEIGHT CALCULATION 
+"""
 
+###
+# IKEA OVERWEIGHT STATUS
+###
+print("PART 3 START")
+
+overweight_services = [
+    "Call Out Service",
+    "Delivery Service",
+    "Return Delivery",
+    "Furniture Removal Service",
+    "After Sales Delivery",
+]
+
+
+def ikea_overweight(df):
+    df["Ikea Overweight Status"] = df["Ikea Overweight Status"].astype("str")
+    for i in df.index:
+        row = df.iloc[i]
+        cvw = row["Capacity Value Weight"]  # cvw = Capacity Value Weight
+        bti = row["Bill to Ikea"]
+        mvbc_val = row["MVBC"]
+        sot_val = row["SOT"]
+        epod_val = row["EPOD"]
+        svcName = row["Service Name"]
+        if (mvbc_val == "1") and (sot_val == "0") and (epod_val == "0"):
+            df.at[i, "Ikea Overweight Status"] = "N/A"
+        else:
+            if svcName in overweight_services:
+                if 600 <= cvw <= 800:
+                    df.at[i, "Ikea Overweight Status"] = "600-800 OVERWEIGHT"
+                    if not pd.isnull(bti):
+                        df.at[i, "Bill to Ikea"] = 180
+                elif 801 <= cvw:
+                    df.at[i, "Ikea Overweight Status"] = ">801 OVERWEIGHT"
+                    if not pd.isnull(bti):
+                        df.at[i, "Bill to Ikea"] = 260
+                else:
+                    df.at[i, "Ikea Overweight Status"] = "N/A"
+            else:
+                df.at[i, "Ikea Overweight Status"] = "N/A"
+
+
+print("---Ikea Overweight Start")
+ikea_overweight(df_happy)
+ikea_overweight(df_sad)
+ikea_overweight(outlier_h)
+ikea_overweight(outlier_s)
+print("---Ikea Overweight Complete")
+
+
+def subco_overweight(df):
+    df["Subco Overweight Status"] = df["Subco Overweight Status"].astype("str")
+    for i in df.index:
+        row = df.iloc[i]
+        cvw = row["Capacity Value Weight"]  # cvw = Capacity Value Weight
+        pos = row["Payout to Subco"]
+        mvbc_val = row["MVBC"]
+        sot_val = row["SOT"]
+        epod_val = row["EPOD"]
+        svcName = row["Service Name"]
+        if (mvbc_val == "1") and (sot_val == "0") and (epod_val == "0"):
+            df.at[i, "Subco Overweight Status"] = "N/A"
+        else:
+            if svcName in overweight_services:
+                if 600 <= cvw <= 800:
+                    df.at[i, "Subco Overweight Status"] = "600-800 OVERWEIGHT"
+                    if not pd.isnull(pos):
+                        df.at[i, "Payout to Subco"] = 70
+                elif 801 <= cvw <= 1000:
+                    df.at[i, "Subco Overweight Status"] = "801-1000 OVERWEIGHT"
+                    if not pd.isnull(pos):
+                        df.at[i, "Payout to Subco"] = 90
+                elif 1001 <= cvw <= 2000:
+                    df.at[i, "Subco Overweight Status"] = "1001-2000 OVERWEIGHT"
+                    if not pd.isnull(pos):
+                        df.at[i, "Payout to Subco"] = 120
+                elif 2001 <= cvw:
+                    df.at[i, "Subco Overweight Status"] = ">2001 OVERWEIGHT"
+                    if not pd.isnull(pos):
+                        df.at[i, "Payout to Subco"] = 150
+                else:
+                    df.at[i, "Subco Overweight Status"] = "N/A"
+            else:
+                df.at[i, "Subco Overweight Status"] = "N/A"
+
+
+print("---Subco Overweight Start")
+subco_overweight(df_happy)
+subco_overweight(df_sad)
+subco_overweight(outlier_h)
+subco_overweight(outlier_s)
+print("---Subco Overweight Complete")
+print("PART 3 COMPLETE")
+print("_______________________")
 """
 EXCEL EXPORT AND STYLES
 """
@@ -599,6 +712,18 @@ def highlight(value):
         return "background-color: #90EE90"
     elif value == "0":
         return "background-color: #FFCCCB"
+    elif value == "600-800 OVERWEIGHT":
+        return "background-color: #FFCCCB"
+    elif value == "801-1000 OVERWEIGHT":
+        return "background-color: #FFCCCB"
+    elif value == "1001-2000 OVERWEIGHT":
+        return "background-color: #FFCCCB"
+    elif value == ">2001 OVERWEIGHT":
+        return "background-color: #FFCCCB"
+    elif value == ">801 OVERWEIGHT":
+        return "background-color: #FFCCCB"
+    elif value == "N/A":
+        return "background-color: #ADD8E6"
 
 
 # df_epod.to_excel(nvbc_base_writer, sheet_name="epod", index=False)
@@ -606,18 +731,22 @@ def highlight(value):
 # df_missingRow.to_excel(nvbc_base_writer, sheet_name="sot-missing", index=False)
 # df_nvbc.to_excel(nvbc_base_writer, sheet_name="nvbc", index=False)
 print("EXPORTING...")
-df_sad.style.applymap(highlight, subset=["EPOD", "SOT", "MVBC"]).to_excel(
-    nvbc_base_writer, sheet_name="A&R Order", index=False
-)
-df_happy.style.applymap(highlight, subset=["EPOD", "SOT", "MVBC"]).to_excel(
-    nvbc_base_writer, sheet_name="S Order", index=False
-)
-outlier_h.style.applymap(highlight, subset=["EPOD", "SOT", "MVBC"]).to_excel(
-    nvbc_base_writer, sheet_name="S OUTLIER Order", index=False
-)
-outlier_s.style.applymap(highlight, subset=["EPOD", "SOT", "MVBC"]).to_excel(
-    nvbc_base_writer, sheet_name="A&R OUTLIER Order", index=False
-)
+df_sad.style.applymap(
+    highlight,
+    subset=["EPOD", "SOT", "MVBC", "Subco Overweight Status", "Ikea Overweight Status"],
+).to_excel(nvbc_base_writer, sheet_name="A&R Order", index=False)
+df_happy.style.applymap(
+    highlight,
+    subset=["EPOD", "SOT", "MVBC", "Subco Overweight Status", "Ikea Overweight Status"],
+).to_excel(nvbc_base_writer, sheet_name="S Order", index=False)
+outlier_h.style.applymap(
+    highlight,
+    subset=["EPOD", "SOT", "MVBC", "Subco Overweight Status", "Ikea Overweight Status"],
+).to_excel(nvbc_base_writer, sheet_name="S OUTLIER Order", index=False)
+outlier_s.style.applymap(
+    highlight,
+    subset=["EPOD", "SOT", "MVBC", "Subco Overweight Status", "Ikea Overweight Status"],
+).to_excel(nvbc_base_writer, sheet_name="A&R OUTLIER Order", index=False)
 nvbc_base_writer.save()
 print("NVBC BASE EXPORTED")
 
