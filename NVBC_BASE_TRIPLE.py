@@ -200,6 +200,14 @@ def data_fill(df):
             (df_epod["Document No."] == docuNo)
             & (df_epod["Service Order No."] == svcOrderNo)
         ]
+        # if len(sot_match) > 1:
+        #     print("SOT")
+        #     print(sot_match)
+        # print(sot_match.iloc[0])
+        # print(sot_match.iloc[1])
+        if len(epod_match) > 1:
+            print("EPOD")
+            print(epod_match)
         # fill exist location
         if not nvbc_match.empty:
             df.at[i, "MVBC"] = "1"

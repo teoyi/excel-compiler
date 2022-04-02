@@ -1,0 +1,8 @@
+SOT has multiple 
+EPOD did not document it 
+There is no team in mvbc 
+
+df_sad and df_happy need to be set such that it is all unique 
+based on mvbc get document no and service order no 
+match it to sot to get all existence of document no and service order no (append to df after creating row?) 
+Once matched to sot, fill in the blanks if epod exists with team matched
