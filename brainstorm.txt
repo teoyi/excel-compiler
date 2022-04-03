@@ -6,3 +6,28 @@ df_sad and df_happy need to be set such that it is all unique
 based on mvbc get document no and service order no 
 match it to sot to get all existence of document no and service order no (append to df after creating row?) 
 Once matched to sot, fill in the blanks if epod exists with team matched
+
+
+issue now 
+
+mvbc and sot is matched and there is a df containing mvbc base 
+
+from info get epod match 
+and df match 
+
+if df match len > 1: 
+    match sot team 
+else : 
+    just fill epod item 
+
+
+split df into dictionary 
+check for each dictionary 
+    document number and service order no and sot team 
+
+    get epod match with document number and service order no  
+    if got epod match 
+        fill epod values 
+    else: 
+        continue 
+        
