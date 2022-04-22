@@ -46,3 +46,49 @@ GS SERVICE STATUS, SOT STATUS
 GS GSV, SOT GSV
 GS FEE CALCULATION, PAYABLE TO SUBCON 
 
+"GS",
+"SOT",
+"Document No.",
+"GS Service Name",
+"Service Name",
+"Service Order No.",
+"GS Driver Team",
+"SOT Team",
+"GS Service Date",
+"Service Date",
+"GS Service Status",
+"SOT Status",
+"GS Service Goods Value",
+"Service Goods Value",
+"GS Fee Calculation",
+"Payout to Subco",
+"GS Sell-to Customer Name",
+"Sell-to Customer Name",  # NVBC
+"GS Sell-to Address",
+"Sell-to-Address",  # NVBC
+"Capacity Value Weight",
+"Capacity Value Volume",
+"Subco Overweight Status",
+"Ikea Overweight Status",
+"Payout to Subco",
+"Bill to Ikea",
+"EPOD",
+"MVBC",
+"EPOD Team",  # epod service personne l!!!!!
+"EPOD Reason",  # EPOD reason !!!!!!!
+"EPOD Service Remarks",  # EPOD service remakrs !!!
+"SOT Remark/ Issue",  # SOT remark/issue
+"SOT Service Comment",  # SOT service comment @!!!!!
+"MVBC Service Comment",  # NVBC, SOT
+"EPOD Status",  # EPOD STATUS !!!!!
+"MVBC Service Status",  # NVBC SERVICE STATUS
+"GRN",
+"Manual Value",
+"Service Price Excl. GST",  # NVBC, SOT
+"CRM Case ID.",  # NVBC
+"Service Remarks",  # EPOD
+"Routed Date",  # NVBC service date
+"Alt Doc Number (up to 3)",  # NVBC, SOT
+"Alt Doc Number1 (up to 3)",  # SOT
+"Flow",  # NVBC based on AR or S
+"Sales Channel",  # NVBC
