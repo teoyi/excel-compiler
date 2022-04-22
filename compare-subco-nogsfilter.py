@@ -104,7 +104,7 @@ df_subco = pd.read_excel(FILE_PATH_SUBCO)
 
 # CREATE WRITER TO OUTPUT MULTIPLE SHEETS
 subco_writer = pd.ExcelWriter(
-    "C:\\Users\\yipen\\Desktop\\SUBCO_COMPARE.xlsx", engine="xlsxwriter"
+    "C:\\Users\\yipen\\Desktop\\SUBCO_COMPARE_ALL.xlsx", engine="xlsxwriter"
 )
 
 """
@@ -216,79 +216,38 @@ for i in range(len(unique_subco)):
         happyMatchCol = happy_match.columns.values.tolist()
         happyRows = happy_match.values.tolist()
         for happyRow in happyRows:
-            sot_team = happyRow[happyMatchCol.index("SOT Team")]
-            if pd.isnull(sot_team):
-                d = {}
-                for col in required_headers:
-                    d[col] = ""
-                d["SOT"] = "1"
-                d["Source"] = "SOT"
-                if not subco_match.empty:
-                    d["GS"] = "1"
-                else:
-                    d["GS"] = "0"
-                for col in mvbc_headers:
-                    if col == "SOT Team":
-                        d[col] = "EMPTY"
-                    else:
-                        i = happyMatchCol.index(col)
-                        d[col] = happyRow[i]
-                data.append(d)
-            elif "gs" in sot_team.lower():
-                d = {}
-                for col in required_headers:
-                    d[col] = ""
-                d["SOT"] = "1"
-                d["Source"] = "SOT"
-                if not subco_match.empty:
-                    d["GS"] = "1"
-                else:
-                    d["GS"] = "0"
-                for col in mvbc_headers:
-                    i = happyMatchCol.index(col)
-                    d[col] = happyRow[i]
-                data.append(d)
+            d = {}
+            for col in required_headers:
+                d[col] = ""
+            d["SOT"] = "1"
+            d["Source"] = "SOT"
+            if not subco_match.empty:
+                d["GS"] = "1"
             else:
-                continue
+                d["GS"] = "0"
+            for col in mvbc_headers:
+                i = happyMatchCol.index(col)
+                d[col] = happyRow[i]
+            data.append(d)
+            continue
 
     if not sad_match.empty:
         sadMatchCol = sad_match.columns.values.tolist()
         sadRows = sad_match.values.tolist()
         for sadRow in sadRows:
-            sot_team = sadRow[sadMatchCol.index("SOT Team")]
-            if pd.isnull(sot_team):
-                d = {}
-                for col in required_headers:
-                    d[col] = ""
-                d["SOT"] = "1"
-                d["Source"] = "SOT"
-                if not subco_match.empty:
-                    d["GS"] = "1"
-                else:
-                    d["GS"] = "0"
-                for col in mvbc_headers:
-                    if col == "SOT Team":
-                        d[col] = "EMPTY"
-                    else:
-                        i = sadMatchCol.index(col)
-                        d[col] = sadRow[i]
-                data.append(d)
-            elif "gs" in sot_team.lower():
-                d = {}
-                for col in required_headers:
-                    d[col] = ""
-                d["SOT"] = "1"
-                d["Source"] = "SOT"
-                if not subco_match.empty:
-                    d["GS"] = "1"
-                else:
-                    d["GS"] = "0"
-                for col in mvbc_headers:
-                    i = sadMatchCol.index(col)
-                    d[col] = sadRow[i]
-                data.append(d)
+            d = {}
+            for col in required_headers:
+                d[col] = ""
+            d["SOT"] = "1"
+            d["Source"] = "SOT"
+            if not subco_match.empty:
+                d["GS"] = "1"
             else:
-                continue
+                d["GS"] = "0"
+            for col in mvbc_headers:
+                i = sadMatchCol.index(col)
+                d[col] = sadRow[i]
+            data.append(d)
 
 
 # print(data)
