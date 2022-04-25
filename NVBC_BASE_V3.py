@@ -106,9 +106,9 @@ required_headers = [
 ]
 
 # READ EXCEL FILES AND CREATE DATAFRAME
-FILE_PATH_EPOD = "C:\\Users\\yipen\\Desktop\\EPOD_FEB_COPY.xls"
-FILE_PATH_SOT = "C:\\Users\\yipen\\Desktop\\compiled_FEB_SOT_2022.xlsx"
-FILE_PATH_NVBC = "C:\\Users\\yipen\\Desktop\\MVBC_FEB.xlsx"
+FILE_PATH_EPOD = "C:\\Users\\yipen\\Desktop\\EPOD - MAR 22 (18042022).xls"
+FILE_PATH_SOT = "C:\\Users\\yipen\\Desktop\\filtered_ALL_MAR2022.xlsx"
+FILE_PATH_NVBC = "C:\\Users\\yipen\\Desktop\\Navition March 2022 (18042022).xlsx"
 
 df_epod = pd.read_excel(FILE_PATH_EPOD)
 df_sot = pd.read_excel(FILE_PATH_SOT, sheet_name="filtered")
@@ -234,6 +234,8 @@ sot_col = [
 
 epod_col = ["EPOD Team", "EPOD Reason", "EPOD Service Remarks", "EPOD Status"]
 
+sotMatchedPairs = []
+
 
 def sot_fill(info):
     df = pd.DataFrame(columns=required_headers)
@@ -290,6 +292,8 @@ def sot_fill(info):
             data.append(d)
 
         elif len(sot_match) > 1:  # match more than once
+            # append to list of matched sot
+            sotMatchedPairs.append(pairs)
             sotMatchCol = sot_match.columns.values.tolist()
             sotRows = sot_match.values.tolist()
             for sotRow in sotRows:
@@ -331,6 +335,8 @@ def sot_fill(info):
                 data.append(d)
 
         elif len(sot_match) == 1:  # match only once
+            # Adding matched pairs to list
+            sotMatchedPairs.append(pairs)
             # initializing dictionary to contain row values
             d = {}
             for i in required_headers:
@@ -730,6 +736,30 @@ print("--- For Sad Main")
 subco_overweight(df_sad_complete)
 print("--- For Sad Outlier")
 subco_overweight(outlier_s)
+
+"""
+Part 4: Getting unmatched values for SOT 
+"""
+
+# List containing docu and svc order no are in sotMatchedPairs
+# print(sotMatchedPairs)
+
+# create list of index to be dropped later
+dropList = []
+## iterate over matched pairs and get index of rows that meets the requirement
+for pair in sotMatchedPairs:
+    docuNo = pair[0]
+    svcOrderNo = pair[1]
+    indices = df_sot.index[
+        (df_sot["Document No."] == docuNo) & (df_sot["Service Order No."] == svcOrderNo)
+    ]
+    ## append index to list
+    for index in indices:
+        dropList.append(index)
+# print(dropList)
+## drop the rows of index at the end of it
+df_unmatch_sot = df_sot.drop(dropList, 0)
+
 """
 EXCEL EXPORT AND STYLES
 """
@@ -775,5 +805,6 @@ outlier_s.style.applymap(
     highlight,
     subset=["EPOD", "SOT", "MVBC", "Subco Overweight Status", "Ikea Overweight Status"],
 ).to_excel(nvbc_base_writer, sheet_name="A&R OUTLIER Order", index=False)
+df_unmatch_sot.to_excel(nvbc_base_writer, sheet_name="Unmatch SOT", index=False)
 nvbc_base_writer.save()
 print("\nDone. Please check the file at the location you have saved.")
