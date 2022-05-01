@@ -490,7 +490,7 @@ bill_to_ikea(df_sad_complete)
 # Payout to subco
 ###
 
-gs_const_svc = [
+contracted_const_svc = [
     "After Sales Delivery",
     "Call Out Service",
     "Delivery Service",
@@ -498,14 +498,14 @@ gs_const_svc = [
     "Furniture Removal Service",
 ]
 
-gs_sgv_svc = [
+contracted_sgv_svc = [
     "Assembly ASIS",
     "Furniture Assembly Service",
     "Furniture Disassembly Service",
     "Sofa and Sofa Bed Assembly",
 ]
 
-gs_afterSales = [
+contracted_afterSales = [
     "After Sales Assembly",
     "After Sales Disassembly",
 ]
@@ -539,14 +539,14 @@ def pay_to_sub(df, df_outlier):
                     #     print(team[3:])
 
                     # # print(three, two, one)
-                    if two != "GS":
+                    if two != "GS" or three != "HJK":
                         svcName = row["Service Name"]
                         sgv = row["Service Goods Value"]
 
                         if three == "MGL":
                             teamNum = team[3:]
                             thirty = ["11", "12", "13", "14"]
-                            thirty_three = ["10", "15", "16", "17"]
+                            thirty_three = ["10", "15", "16", "17", "20"]
 
                             if teamNum in thirty:
                                 if svcName in const_svc:
@@ -560,11 +560,11 @@ def pay_to_sub(df, df_outlier):
                                     df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
                             else:
                                 df.at[i, "Payout to Subco"] = 0
-                        elif three == "HJK":
-                            if svcName in const_svc:
-                                df.at[i, "Payout to Subco"] = 33
-                            elif svcName in sgv_svc:
-                                df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
+                        # elif three == "HJK":
+                        #     if svcName in const_svc:
+                        #         df.at[i, "Payout to Subco"] = 33
+                        #     elif svcName in sgv_svc:
+                        #         df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
                         elif two == "JX":
                             if svcName in const_svc:
                                 df.at[i, "Payout to Subco"] = 33
@@ -610,15 +610,20 @@ def pay_to_sub(df, df_outlier):
                                 df.at[i, "Payout to Subco"] = 33
                             elif svcName in sgv_svc:
                                 df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
+                        elif two == "PN":
+                            if svcName in const_svc:
+                                df.at[i, "Payout to Subco"] = 30
+                            elif svcName in sgv_svc:
+                                df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
                     else:
                         svcName = row["Service Name"]
                         sgv = row["Service Goods Value"]
 
-                        if svcName in gs_const_svc:
+                        if svcName in contracted_const_svc:
                             df.at[i, "Payout to Subco"] = 33
-                        elif svcName in gs_sgv_svc:
+                        elif svcName in contracted_sgv_svc:
                             df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                        elif svcName in gs_afterSales:
+                        elif svcName in contracted_afterSales:
                             df.at[i, "Payout to Subco"] = round(0.07 * sgv, 2)
 
 
