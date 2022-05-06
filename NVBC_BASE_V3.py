@@ -539,7 +539,17 @@ def pay_to_sub(df, df_outlier):
                     #     print(team[3:])
 
                     # # print(three, two, one)
-                    if two != "GS" or three != "HJK":
+                    if two == "GS" or three == "HJK":
+                        svcName = row["Service Name"]
+                        sgv = row["Service Goods Value"]
+
+                        if svcName in contracted_const_svc:
+                            df.at[i, "Payout to Subco"] = 33
+                        elif svcName in contracted_sgv_svc:
+                            df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
+                        elif svcName in contracted_afterSales:
+                            df.at[i, "Payout to Subco"] = round(0.07 * sgv, 2)
+                    else:
                         svcName = row["Service Name"]
                         sgv = row["Service Goods Value"]
 
@@ -615,16 +625,6 @@ def pay_to_sub(df, df_outlier):
                                 df.at[i, "Payout to Subco"] = 30
                             elif svcName in sgv_svc:
                                 df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                    else:
-                        svcName = row["Service Name"]
-                        sgv = row["Service Goods Value"]
-
-                        if svcName in contracted_const_svc:
-                            df.at[i, "Payout to Subco"] = 33
-                        elif svcName in contracted_sgv_svc:
-                            df.at[i, "Payout to Subco"] = round(0.072 * sgv, 2)
-                        elif svcName in contracted_afterSales:
-                            df.at[i, "Payout to Subco"] = round(0.07 * sgv, 2)
 
 
 print("\nStarting Payout to Subco Calculation")
