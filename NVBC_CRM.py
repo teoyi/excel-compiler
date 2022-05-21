@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+from collections import Counter
 from cowpy import cow
 
 msg = cow.milk_random_cow("Welcome to your data processing script!")
@@ -41,16 +43,114 @@ def printProgressBar(
 FILE_PATH_NVBC = "C:\\Users\\yipen\\Desktop\\nvbc(1-18may).xlsx"
 FILE_PATH_CRM = "C:\\Users\\yipen\\Desktop\\21-05-2022-MGL Service Order Report.csv"
 
-df_mine = pd.read_excel(FILE_PATH_NVBC, sheet_name="17 - 30 APR")
-df_subco = pd.read_excel(FILE_PATH_CRM, sheet_name="Fee calculation")
+df_nvbc = pd.read_excel(FILE_PATH_NVBC, sheet_name="Filtered")
+df_crm = pd.read_csv(FILE_PATH_CRM)
 
 # CREATE WRITER TO OUTPUT MULTIPLE SHEETS
 compare_writer = pd.ExcelWriter(
     "C:\\Users\\yipen\\Desktop\\NVBC_CRM_merge.xlsx", engine="xlsxwriter"
 )
 
-print(df_mine)
-print(df_subco)
+# print(df_nvbc)
+# print(df_crm)
+
+print("\nGenerating headers...")
+headers_crm = df_crm.columns.values.tolist()
+headers_crm_ori = df_crm.columns.values.tolist()
+headers_crm = list(
+    map(lambda x: x.replace("SERVICE STATUS", "CRM SERVICE STATUS"), headers_crm)
+)
+headers_crm.insert(0, "NVBC")
+status_index = headers_crm.index("CRM SERVICE STATUS")
+headers_crm.insert(status_index, "NVBC SERVICE STATUS")
+print("\nHeaders to be used")
+for header in headers_crm:
+    print(header)
+print("\nHeaders generated")
+
+"""
+crm as base using docu no and svc order no -> keep crm all columsn 
+included columns from nvbc =
+
+nvbc ------ crm 
+Service Status SERVICE STATUS
+
+
+if nvbc have crm don't have add to new sheet 
+"""
+
+crm_docuNo = df_crm["DOCUMENT NO."].tolist()
+crm_svcOrderNo = df_crm["SERVICE ORDER NO."].tolist()
+zipped_crm = list(zip(crm_docuNo, crm_svcOrderNo))
+
+print("Checking for duplicates")
+d = Counter(zipped_crm)
+res = [k for k, v in d.items() if v > 1]
+print(f"Number of duplicates: {len(res)}")
+if len(res) > 1:
+    print(f"Duplicates Array: {res}")
+
+df_final = pd.DataFrame(columns=headers_crm)
+headers_nvbc = df_nvbc.columns.values.tolist()
+df_unmatched = pd.DataFrame(columns=headers_nvbc)
+data = []
+crm_matched = []
+
+for i in range(len(zipped_crm)):
+    printProgressBar(i + 1, len(zipped_crm))
+    pairs = zipped_crm[i]
+    docuNo = pairs[0]
+    svcOrderNo = pairs[1]
+
+    nvbc_match = df_nvbc.loc[
+        (df_nvbc["Document No."] == docuNo)
+        & (df_nvbc["Service Order No."] == svcOrderNo)
+    ]
+
+    crm_match = df_crm.loc[
+        (df_crm["DOCUMENT NO."] == docuNo) & (df_crm["SERVICE ORDER NO."] == svcOrderNo)
+    ]
+
+    if not crm_match.empty:
+        d = {}
+        crm_matched.append(pairs)
+
+        for header in headers_crm:
+            d[header] = "MISSING"
+
+        for header in headers_crm_ori:
+            header_data = crm_match.iloc[0][header]
+            if header == "SERVICE STATUS":
+                d["CRM SERVICE STATUS"] = header_data
+            else:
+                d[header] = header_data
+
+        if nvbc_match.empty:
+            d["NVBC"] = "0"
+        else:
+            d["NVBC"] = "1"
+            d["NVBC SERVICE STATUS"] = nvbc_match.iloc[0]["Service Status"]
+        data.append(d)
+
+print("Building DataFrame")
+for i in range(len(data)):
+    printProgressBar(i + 1, len(data))
+    dict = data[i]
+    df_final = df_final.append(dict, ignore_index=True)
+
+
+dropList = []
+for pair in crm_matched:
+    docuNo = pair[0]
+    svcOrderNo = pair[1]
+    indices = df_nvbc.index[
+        (df_nvbc["Document No."] == docuNo)
+        & (df_nvbc["Service Order No."] == svcOrderNo)
+    ]
+
+    for index in indices:
+        dropList.append(index)
+df_unmatch_nvbc = df_nvbc.drop(dropList, 0)
 
 
 """
@@ -61,34 +161,16 @@ EXCEL EXPORT AND STYLES
 def highlight(value):
     if value == "CHECK MULTI":
         return "background-color: #90EE90"
+    elif value == "0":
+        return "background-color: #FFCCCB"
     elif value == "MISSING":
         return "background-color: #FFCCCB"
-    elif value == "N/A":
-        return "background-color: #ADD8E6"
 
 
-# df_epod.to_excel(nvbc_base_writer, sheet_name="epod", index=False)
-# df_sot.to_excel(nvbc_base_writer, sheet_name="sot", index=False)
-# df_missingRow.to_excel(nvbc_base_writer, sheet_name="sot-missing", index=False)
-# df_nvbc.to_excel(nvbc_base_writer, sheet_name="nvbc", index=False)
-# print("\nEXPORTING...")
-df_ori.style.applymap(
-    highlight, subset=["GS svs good value", "GS Fee calculation"],
-).to_excel(compare_writer, sheet_name="ORIGINAL FILL", index=False)
-df_multi.to_excel(compare_writer, sheet_name="MULTI", index=False)
-df_unmatched.to_excel(compare_writer, sheet_name="NO MATCH", index=False)
-# df_happy_complete.style.applymap(
-#     highlight,
-#     subset=["EPOD", "SOT", "MVBC", "Subco Overweight Status", "Ikea Overweight Status"],
-# ).to_excel(nvbc_base_writer, sheet_name="S Order", index=False)
-# outlier_h.style.applymap(
-#     highlight,
-#     subset=["EPOD", "SOT", "MVBC", "Subco Overweight Status", "Ikea Overweight Status"],
-# ).to_excel(nvbc_base_writer, sheet_name="S OUTLIER Order", index=False)
-# outlier_s.style.applymap(
-#     highlight,
-#     subset=["EPOD", "SOT", "MVBC", "Subco Overweight Status", "Ikea Overweight Status"],
-# ).to_excel(nvbc_base_writer, sheet_name="A&R OUTLIER Order", index=False)
-# df_unmatch_sot.to_excel(nvbc_base_writer, sheet_name="Unmatch SOT", index=False)
+df_final.style.applymap(highlight, subset=["NVBC", "NVBC SERVICE STATUS"],).to_excel(
+    compare_writer, sheet_name="CRM BASE", index=False
+)
+# df_multi.to_excel(compare_writer, sheet_name="MULTI", index=False)
+df_unmatch_nvbc.to_excel(compare_writer, sheet_name="NO MATCH", index=False)
 compare_writer.save()
-# print("\nDone. Please check the file at the location you have saved.")
+print("\nDone. Please check the file at the location you have saved.")
